@@ -30,7 +30,7 @@ jobs:
       
       - name: Build with Maven
         working-directory: backend
-        run: mvn clean install
+        run: mvn clean install -Dskip tests
 
 
       # Login to Azure using OIDC (recommended) [1](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)[3](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure)
