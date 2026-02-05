@@ -1,0 +1,23 @@
+name: build ci
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+       - name: Checkout code
+         uses: actions/checkout@v6.0.2
+
+       - name: Setup Java JDK
+         uses: actions/setup-java@v5.2.0 
+         with:
+          java-version: 17
+          distribution: microsoft
+        -  name: build with maven
+           run : mvn clean install -Dskip tests
+           run : mkdir staging && target/* .jar staging
+        - name: Upload a Build Artifact
+          uses: actions/upload-artifact@v6.0.0
+          with:
+          name: package
+          path: staging
