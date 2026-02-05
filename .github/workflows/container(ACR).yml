@@ -27,8 +27,9 @@ jobs:
           cache: "maven"
 
       
-      - name: Build with Maven (explicit pom)
-        run: mvn -f backend/pom.xml -B -DskipTests package
+      - name: Build with Maven
+        working-directory: backend
+        run: mvn -B -DskipTests package
 
       # Login to Azure using OIDC (recommended) [1](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)[3](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure)
       - name: Docker login (Azure)
