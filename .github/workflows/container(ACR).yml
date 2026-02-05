@@ -1,0 +1,56 @@
+name: Build and Push Docker image to ACR
+
+on:
+  push:
+  workflow_dispatch:
+
+
+env:
+  IMAGE_NAME: my-java-app
+  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}  # e.g. myregistry.azurecr.io
+  ACR_NAME: ${{ secrets.ACR_NAME }}                  # e.g. myregistry
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      # Optional: build Java artifact before Docker build (keeps Docker builds faster)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: "maven"
+
+      
+      - name: Build with Maven
+        run: mvn -B -DskipTests package
+
+      # Login to Azure using OIDC (recommended) [1](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)[3](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure)
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Login Docker to ACR using Azure identity
+      - name: Login to ACR
+        run: az acr login --name "${ACR_NAME}"
+        # ACR supports Entra ID based auth via `az acr login` [4](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication)[5](https://learn.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest)
+
+
+      # Build and push Docker image with tags
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
