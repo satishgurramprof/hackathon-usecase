@@ -12,12 +12,14 @@ pool:
    -  mvn
 
 steps:
-  - task: JavaToolInstaller@0
-    displayName: 'Use Java 17'
-    inputs:
-      versionSpec: '17'
-      jdkSourceOption: 'PreInstalled' 
-      jdkArchitectureOption: 'x64'
+  
+  - script: |
+      sudo apt-get update
+      sudo apt-get install -y openjdk-17-jdk
+      echo "Installed Java:"
+      java -version
+    displayName: 'Install Java 17'
+
 
 
   - task: Maven@4
