@@ -14,7 +14,7 @@ pool:
 steps:
   - task: Maven@4
     inputs:
-      mavenPOMFile: 'pom.xml'
+      mavenPOMFile: 'order-service/pom.xml'
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
       mavenVersionOption: 'Default'
