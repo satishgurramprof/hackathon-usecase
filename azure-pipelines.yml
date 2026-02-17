@@ -12,6 +12,14 @@ pool:
    -  mvn
 
 steps:
+  - task: JavaToolInstaller@0
+    displayName: 'Use Java 17'
+    inputs:
+      versionSpec: '17'
+      jdkSourceOption: 'PreInstalled' 
+      jdkArchitectureOption: 'x64'
+
+
   - task: Maven@4
     inputs:
       mavenPOMFile: 'order-service/pom.xml'
